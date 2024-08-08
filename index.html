@@ -1,15 +1,53 @@
 <!DOCTYPE html>
-<html lang="es">
-<style type="text/css">
-  embed{width: 98vw !important;
-    height: 97vh !important;}
-</style>
+<html lang="en" >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de PDF</title>
+  <meta charset="UTF-8">
+  <title>Lexus Guadalajara</title>
+  <style>
+      iframe{
+        width: 98vw;
+        height: 97vh;
+      }
+  </style>  
+
 </head>
 <body>
-    <embed src="Lexus_Guadalajara_alinzas.pdf" type="application/pdf"  />
+<!-- partial:index.partial.html -->
+<pdf-viewer src="https://lexus-guadalajara.pages.dev/Lexus_Guadalajara_alinzas.pdf"></pdf-viewer>
+<!-- partial -->
+  <script  >
+      const template = document.createElement('template');
+template.innerHTML = `
+  <iframe frameborder="0" style="width: 98vw; height: 97vh;">
+  </iframe>
+`
+
+class PdfViewer extends HTMLElement {
+  constructor() {
+    super()
+    const shadowRoot = this.attachShadow({mode: 'open'})
+    shadowRoot.appendChild(template.content.cloneNode(true))
+  }
+  get observedAttributes() {
+    return ['src']
+  }
+  connectedCallback() {
+    this.updateIframeSrc()
+  }
+  attributeChangedCallback(name) {
+    if (['src', 'viewerPath'].includes(name)) {
+      this.updateIframeSrc()
+    }
+  }
+  updateIframeSrc() {
+    this.shadowRoot.querySelector('iframe').setAttribute(
+      'src', 
+      `https://mozilla.github.io/pdf.js/web/viewer.html?file=${this.getAttribute('src') || ''}`
+    )
+  }
+}
+window.customElements.define('pdf-viewer', PdfViewer)
+  </script>
+
 </body>
 </html>
